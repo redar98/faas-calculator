@@ -1,0 +1,246 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<title>Serverless FaaS Pricing Calculator</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<meta name="description" content="A simple calculator that calculates expenses for invocations and computional time on AWS Lambda, Azure Functions, Google Cloud Functions and IBM Cloud Functions" />
+	<meta name="robots" content="index, follow">
+	<link rel="stylesheet" href="assets/css/main.css" />
+	<link rel="icon" type="image/svg+xml" href="images/favicon.svg" />
+	<link rel="icon" type="image/png" href="images/favicon.png" />
+	<noscript>
+		<link rel="stylesheet" href="assets/css/noscript.css" />
+	</noscript>
+</head>
+
+<body class="is-preload">
+
+	<!-- Wrapper -->
+	<div id="wrapper">
+
+		<!-- Header -->
+		<header id="header">
+			<div class="logo">
+				<img class="icon" src="images/logo_light.svg">
+			</div>
+			<div class="content">
+				<div class="inner">
+					<h2>SERVERLESS FaaS COST CALCULATOR</h2>
+					<p>A calculator for estimating monthly costs of Serverless FaaS services<br>
+						on different cloud service providers</p>
+
+					<div id="center-fields">
+						<form method="post" action="#">
+							<div class="fields">
+								<div class="field">
+									<label for="execution-number">Number of executions</label>
+									<input type="number" name="execution-number" id="execution-number"
+										placeholder="5000000" pattern="[0-9]" step="100000">
+								</div>
+								<div class="field">
+									<label for="execution-time">Average execution time (ms)</label>
+									<input type="number" name="execution-time" id="execution-time" placeholder="2000"
+										pattern="[0-9]" step="10">
+								</div>
+								<div class="field">
+									<label for="memory-size">Memory allocation</label>
+									<select name="memory-size" id="memory-size">
+										<option value="128">128MB</option>
+										<option value="192">192MB</option>
+										<option value="256">256MB</option>
+										<option value="320">320MB</option>
+										<option value="384">384MB</option>
+										<option value="448">448MB</option>
+										<option value="512">512MB</option>
+										<option value="576">576MB</option>
+										<option value="640">640MB</option>
+										<option value="704">704MB</option>
+										<option value="768">768MB</option>
+										<option value="832">832MB</option>
+										<option value="896">896MB</option>
+										<option value="960">960MB</option>
+										<option value="1024">1024MB</option>
+										<option value="1088">1088MB</option>
+										<option value="1152">1152MB</option>
+										<option value="1216">1216MB</option>
+										<option value="1280">1280MB</option>
+										<option value="1344">1344MB</option>
+										<option value="1408">1408MB</option>
+										<option value="1472">1472MB</option>
+										<option value="1536">1536MB</option>
+										<!-- aws goes up to 10k...
+										gcf goes up to 8k...
+										icf goes -->
+									</select>
+								</div>
+								<div class="field center">
+									<input type="checkbox" id="free-tier" name="free-tier" checked=true>
+									<label for="free-tier">Use free-tier</label>
+								</div>
+							</div>
+						</form>
+					</div>
+
+					<p class="info hidden" id="calc-info">This is <u><span id="total-gbs"></span></u> GB/s of compute time and <u><span id="total-requests"></span></u> requests per month</p>
+
+					<div class="table-wrapper cost-table">
+						<table>
+							<thead>
+								<tr>
+									<th>Cloud Provider</th>
+									<th>Request Costs</th>
+									<th>Compute Costs</th>
+									<th>Monthly Total</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td><a href="https://aws.amazon.com/lambda/" target="_blank">AWS Lambda</a></td>
+									<td>$<span id="aws-request-costs"> ·</span></td>
+									<td>$<span id="aws-compute-costs"> ·</span></td>
+									<td>$<span id="aws-monthly-costs"> ·</span></td>
+								</tr>
+								<tr>
+									<td><a href="https://azure.microsoft.com/services/functions/" target="_blank">Microsoft Azure Functions</a></td>
+									<td>$<span id="azure-request-costs"> ·</span></td>
+									<td>$<span id="azure-compute-costs"> ·</span></td>
+									<td>$<span id="azure-monthly-costs"> ·</span></td>
+								</tr>
+								<tr>
+									<td><a href="https://cloud.google.com/functions" target="_blank">Google Cloud Functions</a></td>
+									<td>$<span id="google-request-costs"> ·</span></td>
+									<td>$<span id="google-compute-costs"> ·</span></td>
+									<td>$<span id="google-monthly-costs"> ·</span></td>
+								</tr>
+								<tr>
+									<td><a href="https://cloud.ibm.com/functions/" target="_blank">IBM Cloud Functions</a></td>
+									<td>$<span id="ibm-request-costs"> ·</span></td>
+									<td>$<span id="ibm-compute-costs"> ·</span></td>
+									<td>$<span id="ibm-monthly-costs"> ·</span></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<nav>
+				<ul>
+					<li><a href="#help">Help</a></li>
+					<li><a href="#principle">How it works?</a></li>
+					<li><a href="#about">About</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<!-- Main -->
+		<div id="main">
+
+			<!-- Help -->
+			<article id="help">
+				<h2 class="major">Help</h2>
+				<span class="image main"><img src="images/pic01.jpg" alt="" /></span>
+				<p>Costs for FaaS services are based on execution time. Many providers calculate the execution time of
+					each function in 100ms increments and always round up. The minimum execution time they will charge
+					you for is 100ms, so any function that runs for less than 100ms will be billed at 100ms. AWS and
+					Azure however, bills on a 1ms granularity. How much they charge per 100ms is based on memory size.</p>
+				<p>Below is a brief description of each field:</p>
+				<ul>
+					<li><strong>Number of executions</strong> — <i>total number of invocations for your function per month;</i></li>
+					<li><strong>Average execution time</strong> — <i>average execution duration of your function;</i></li>
+					<li><strong>Memory allocation</strong> — <i>amount of memory your function needs for its work;</i></li>
+					<li><strong>Use free tier</strong> — <i>whether to include free tier quota in the monthly calculations.</i>
+					</li>
+				</ul>
+			</article>
+
+			<!-- Principle -->
+			<article id="principle">
+				<h2 class="major">How it works?</h2>
+				<span class="image main"><img src="images/pic02.jpg" alt="" /></span>
+				<p>Many providers use a pay-as-you-use model and the cost entirely depends on your usage. The
+					calculation is based on <strong>usage ($/invocation)</strong> and <strong>execution duration
+						($/hour)</strong>. To find the compute costs, you first need to calculate monthly execution
+					duration by multiplying number of executions with duration (s). Afterwards, multiply monthly
+					duration with memory allocation (GB). You will get <u>GB-s compute time</u> per month which is used
+					on all calculations.</p>
+				<p>Depending on the provider, every month you will get a number of invocations and seconds of compute
+					time <u>for free</u>.</p>
+				<hr>
+				<p>Table below shows the price for invocations and computational time.</p>
+				<div class="table-wrapper">
+					<table>
+						<thead>
+							<tr>
+								<th>Vendor</th>
+								<th>1m invocation price</th>
+								<th>GB/s of compute price</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>AWS Lambda</td>
+								<td>$<i><span id="aws-requests-charge"></span></i></td>
+								<td>$<i><span id="aws-compute-charge"></span></i></td>
+							</tr>
+							<tr>
+								<td>Azure Functions</td>
+								<td>$<i><span id="azure-requests-charge"></span> (rounded requests)</i></td>
+								<td>$<i><span id="azure-compute-charge"></span></i></td>
+							</tr>
+							<tr>
+								<td>Google Cloud Functions</td>
+								<td>$<i><span id="google-requests-charge"></span></i></td>
+								<td>$<i><span id="google-compute-charge"></span></i></td>
+							</tr>
+							<tr>
+								<td>IBM Cloud Functions</td>
+								<td>$<i><span id="ibm-requests-charge"></span></i></td>
+								<td>$<i><span id="ibm-compute-charge"></span></i></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</article>
+
+			<!-- About -->
+			<article id="about">
+				<h2 class="major">About</h2>
+				<span class="image main"><img src="images/pic03.jpg" alt="" /></span>
+				<p>This is a simple calculator that combines several official estimators on a single page. It is used
+					for comparing invocation and compute costs per month on different Cloud Service Providers. The
+					results are exactly equal to the values from official calculators. At the moment, to estimate the
+					costs, it is necessary to go to the web page of the provider and create an estimation individually.
+				</p>
+				<p>The main purpose of this application is to provide a single page with a user friendly table for
+					comparing several providers in one go.</p>
+				<h4>Connect</h4>
+				<ul class="icons">
+					<li><a href="https://github.com/redar98/faas-calculator" target="_blank" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
+				</ul>
+			</article>
+
+		</div>
+
+		<!-- Footer -->
+		<footer id="footer">
+			<p class="copyright">&copy; 2021 Denis Dincer. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
+		</footer>
+
+	</div>
+
+	<!-- BG -->
+	<div id="bg"></div>
+
+	<!-- Scripts -->
+	<script src="assets/js/jquery.min.js"></script>
+	<script src="assets/js/browser.min.js"></script>
+	<script src="assets/js/breakpoints.min.js"></script>
+	<script src="assets/js/util.js"></script>
+	<script src="assets/js/main.js"></script>
+	<script src="assets/js/calculator.js"></script>
+
+</body>
+
+</html>
