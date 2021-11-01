@@ -55,7 +55,6 @@
             invocations: 1
         }
     };
-    const googleMemoryMHzMap = { 128: 200, 256: 400, 512: 800, 1024: 1400, 2048: 2400, 4096: 4800, 8192: 4800 };
 
     const ibmParams = {
         charges: {
@@ -79,6 +78,8 @@
         { name: "ibm", params: ibmParams}
     ];
 
+    const googleMemoryMHzMap = { 128: 200, 256: 400, 512: 800, 1024: 1400 };
+
     const _ = undefined;
     const emptyResult = " ·";
     const thousandsRegex = /\B(?=(\d{3})+(?!\d))/g;
@@ -86,8 +87,9 @@
 
     $(function () {
 
-        // return appropriate CPU MHz corresponding to the memory size ELSE estimate MHz based on previous memory size
+        // return appropriate CPU MHz corresponding to the memory size ELSE estimate MHz based on previous memory ratio
         function estimateCPUForMemory(memorySize, cpuMHzMap) {
+            memorySize = parseInt(memorySize);
             var cpuMHz = cpuMHzMap[memorySize];
 
             if (cpuMHz == undefined)
@@ -101,10 +103,10 @@
         function calculateCosts(inputParams, calcParams) {
 
             // get next closest execution duration (ms) by a granularity
-            const executionsDuration = Math.ceil(inputParams.executionsDuration / calcParams.granularity.duration) * calcParams.granularity.duration;
+            const executionDuration = Math.ceil(inputParams.executionDuration / calcParams.granularity.duration) * calcParams.granularity.duration;
 
             // calculate monthly GB seconds
-            const computationSeconds = inputParams.executionsNumber * (executionsDuration / 1000);
+            const computationSeconds = inputParams.executionsNumber * (executionDuration / 1000);
 
             // memory (GB/sec) allocation costs
             var totalGbs = computationSeconds * (inputParams.memoryAllocation / 1024);
@@ -134,14 +136,14 @@
         }
 
         function calculateExactComputeSeconds(inputParams) {
-            return inputParams.executionsNumber * (inputParams.executionsDuration / 1000) * (inputParams.memoryAllocation / 1024);
+            return inputParams.executionsNumber * (inputParams.executionDuration / 1000) * (inputParams.memoryAllocation / 1024);
         }
 
         function getInputParams() {
             var inputParams = {};
 
             inputParams.executionsNumber = $('#execution-number').val();
-            inputParams.executionsDuration = $('#execution-time').val();
+            inputParams.executionDuration = $('#execution-time').val();
             inputParams.memoryAllocation = $('#memory-size').val();
             inputParams.useFreeTier = $('input[type=checkbox][name=free-tier]').is(":checked");
 
@@ -153,7 +155,7 @@
         }
 
         function isValidInput(inputParams) {
-            return parseInt(inputParams.executionsNumber) && parseInt(inputParams.executionsDuration) && parseInt(inputParams.memoryAllocation)
+            return parseInt(inputParams.executionsNumber) && parseInt(inputParams.executionDuration) && parseInt(inputParams.memoryAllocation)
         }
 
         function updateInfoText(inputParams) {
