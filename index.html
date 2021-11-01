@@ -8,8 +8,9 @@
 	<meta name="description" content="A simple calculator that calculates expenses for invocations and computional time on AWS Lambda, Azure Functions, Google Cloud Functions and IBM Cloud Functions" />
 	<meta name="robots" content="index, follow">
 	<link rel="stylesheet" href="assets/css/main.css" />
+	<link rel="apple-touch-icon" type="image/png" href="images/apple-touch-icon.png" />
+	<link rel="alternate icon" type="image/png" href="images/favicon.png" />
 	<link rel="icon" type="image/svg+xml" href="images/favicon.svg" />
-	<link rel="icon" type="image/png" href="images/favicon.png" />
 	<noscript>
 		<link rel="stylesheet" href="assets/css/noscript.css" />
 	</noscript>
@@ -70,9 +71,6 @@
 										<option value="1408">1408MB</option>
 										<option value="1472">1472MB</option>
 										<option value="1536">1536MB</option>
-										<!-- aws goes up to 10k...
-										gcf goes up to 8k...
-										icf goes -->
 									</select>
 								</div>
 								<div class="field center">
@@ -174,7 +172,7 @@
 						<thead>
 							<tr>
 								<th>Vendor</th>
-								<th>1m invocation price</th>
+								<th>1m requests price</th>
 								<th>GB/s of compute price</th>
 							</tr>
 						</thead>
@@ -186,7 +184,7 @@
 							</tr>
 							<tr>
 								<td>Azure Functions</td>
-								<td>$<i><span id="azure-requests-charge"></span> (rounded requests)</i></td>
+								<td>$<i><span id="azure-requests-charge"></span> (ceiled)</i></td>
 								<td>$<i><span id="azure-compute-charge"></span></i></td>
 							</tr>
 							<tr>
@@ -225,7 +223,7 @@
 
 		<!-- Footer -->
 		<footer id="footer">
-			<p class="copyright">&copy; 2021 Denis Dincer. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
+			<p class="copyright">&copy; 2021 Denis Dincer. Design: <a href="https://html5up.net" target="_blank">HTML5 UP</a>.</p>
 		</footer>
 
 	</div>

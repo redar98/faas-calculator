@@ -989,6 +989,18 @@ input, select, textarea {
 			text-align: left;
 		}
 
+		@media screen and (max-width: 480px) {
+
+			table td {
+				padding: 0.75em 0.4em 0.75em 0.4em; 
+			}
+	
+			table th {
+				padding: 0 0.4em 0.75em 0.4em;
+			}
+
+		}
+
 		table thead {
 			border-bottom: solid 2px #ffffff;
 		}
